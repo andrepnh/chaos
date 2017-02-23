@@ -5,15 +5,19 @@
 
 (defonce points (reagent/atom []))
 
-(defonce ticks (atom 0))
+(defonce ticks (reagent/atom 0))
 
-(defonce x-min (atom 0))
+(defonce x-min (reagent/atom 0))
 
-(defonce x-max (atom 150))
+(defonce x-max (reagent/atom 150))
 
-(defonce y-min (atom 0))
+(defonce y-min (reagent/atom 0))
 
-(defonce y-max (atom 1))
+(defonce y-max (reagent/atom 1))
+
+(defonce width (reagent/atom 800))
+
+(defonce height (reagent/atom 600))
 
 (def options
   {:chart       {:type "line"}
@@ -50,19 +54,19 @@
       (assoc-in [:yAxis :max] @y-max)
       (assoc-in [:series 0 :data] @points)))
 
-(defn chart-render [ps]
+(defn chart-render [wd ht ps]
   @ps
   [:div {:style {:min-width "310px"
-                 :max-width "800px"
-                 :height    "600px"
+                 :max-width (str @wd "px")
+                 :height    (str @ht "px")
                  :margin    "0 auto"}}])
 
 (defn series-updated [this]
   (js/Highcharts.Chart. (reagent/dom-node this)
                         (clj->js (chart-config))))
 
-(defn chart [ps]
-  (reagent/create-class {:reagent-render       #(chart-render ps)
+(defn chart [wd ht ps]
+  (reagent/create-class {:reagent-render       #(chart-render wd ht ps)
                          :component-did-update #(series-updated %1)}))
 
 (defn slider [id v min max]
@@ -100,8 +104,14 @@
    [:div
     [:label {:for "y-max"} "y-axis max value"]
     [slider "y-max" y-max 1 500]]
+   [:div
+    [:label {:for "width"} "width"]
+    [slider "width" width 400 1920]]
+   [:div
+    [:label {:for "height"} "height"]
+    [slider "y-max" height 400 1080]]
    [evolution! 0.851 ticks points
-    [chart points]]])
+    [chart width height points]]])
 
 (reagent/render-component [page]
                           (. js/document (getElementById "app")))
