@@ -116,4 +116,4 @@
 (reagent/render-component [page]
                           (. js/document (getElementById "app")))
 
-(evolution! 0.851 points, speed)
+(defonce foo (evolution! 0.851 points, speed))
