@@ -1,5 +1,5 @@
 (ns maps.core
-  (:require [reagent.core :as reagent :refer [atom]]))
+  (:require [reagent.core :as reagent]))
 
 (enable-console-print!)
 
@@ -18,6 +18,8 @@
 (defonce width (reagent/atom 800))
 
 (defonce height (reagent/atom 600))
+
+(defonce speed (reagent/atom 1700))
 
 (def options
   {:chart       {:type "line"}
@@ -80,15 +82,11 @@
 (defn logistic-map [x]
   (* 3.9341 x (- 1 x)))
 
-(defn evolution! [seed ticks ps _]
-  (let [x (atom seed)]
-    (swap! ps conj [@ticks seed])
-    (fn [_ ticks ps component]
-      (let [x' (logistic-map @x)
-            ticks' (swap! ticks inc)]
-        (swap! ps conj [ticks' x'])
-        (js/setTimeout #(reset! x x') 1000)
-        [:div component (str [ticks' x'])]))))
+(defn evolution! [seed ps sp]
+  (letfn [(evol [x y]
+            (do (swap! ps conj [x y])
+                (js/setTimeout #(evol (inc x) (logistic-map y)) (- 2200 @sp))))]
+    (evol 0 seed)))
 
 (defn page []
   [:div
@@ -97,7 +95,7 @@
     [slider "x-min" x-min -500 0]]
    [:div
     [:label {:for "x-max"} "x-axis max value"]
-    [slider "x-max" x-max 1 500]]
+    [slider "x-max" x-max 1 1000]]
    [:div
     [:label {:for "y-min"} "y-axis min value"]
     [slider "y-min" y-min -500 0]]
@@ -106,12 +104,16 @@
     [slider "y-max" y-max 1 500]]
    [:div
     [:label {:for "width"} "width"]
-    [slider "width" width 400 1920]]
+    [slider "width" width 400 3000]]
    [:div
     [:label {:for "height"} "height"]
     [slider "y-max" height 400 1080]]
-   [evolution! 0.851 ticks points
-    [chart width height points]]])
+   [:div
+    [:label {:for "speed"} "speed"]
+    [slider "speed" speed 200 2000]]
+   [chart width height points]])
 
 (reagent/render-component [page]
                           (. js/document (getElementById "app")))
+
+(evolution! 0.851 points, speed)
