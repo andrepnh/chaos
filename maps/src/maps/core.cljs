@@ -5,8 +5,6 @@
 
 (defonce points (reagent/atom []))
 
-(defonce ticks (reagent/atom 0))
-
 (defonce x-min (reagent/atom 0))
 
 (defonce x-max (reagent/atom 150))
@@ -19,7 +17,7 @@
 
 (defonce height (reagent/atom 600))
 
-(defonce speed (reagent/atom 1700))
+(defonce pause (reagent/atom 1100))
 
 (def options
   {:chart       {:type "line"}
@@ -72,30 +70,48 @@
                          :component-did-update #(series-updated %1)}))
 
 (defn slider [id v min max]
-  [:input {:id        id
-           :type      "range"
-           :min       min
-           :max       max
-           :value     @v
-           :on-change #(reset! v (-> % .-target .-value))}])
+  [:span [:input {:id        id
+                  :type      "range"
+                  :min       min
+                  :max       max
+                  :value     @v
+                  :on-change #(reset! v (-> % .-target .-value))}]
+   @v])
+
+(defn bound-sliders
+  [lower-id lower-v lower-min upper-id upper-v upper-max]
+  [:div
+   [:div
+    [:label {:for lower-id} (str lower-id " value")]
+    [:input {:id        lower-id
+             :type      "range"
+             :min       lower-min
+             :max       (dec (int @upper-v))
+             :value     @lower-v
+             :on-change #(reset! lower-v (-> % .-target .-value))}]
+    @lower-v]
+   [:div
+    [:label {:for upper-id} (str upper-id " value")]
+    [:input {:id        upper-id
+             :type      "range"
+             :min       (inc (int @lower-v))
+             :max       upper-max
+             :value     @upper-v
+             :on-change #(reset! upper-v (-> % .-target .-value))}]
+    @upper-v]])
 
 (defn logistic-map [x]
   (* 3.9341 x (- 1 x)))
 
-(defn evolution! [seed ps sp]
+(defn evolution! [seed ps interval]
   (letfn [(evol [x y]
             (do (swap! ps conj [x y])
-                (js/setTimeout #(evol (inc x) (logistic-map y)) (- 2200 @sp))))]
+                (js/setTimeout #(evol (inc x) (logistic-map y)) @interval)))]
     (evol 0 seed)))
 
 (defn page []
   [:div
-   [:div
-    [:label {:for "x-min"} "x-axis min value"]
-    [slider "x-min" x-min -500 0]]
-   [:div
-    [:label {:for "x-max"} "x-axis max value"]
-    [slider "x-max" x-max 1 1000]]
+   [bound-sliders "x-min" x-min -500 "x-max" x-max 2000]
    [:div
     [:label {:for "y-min"} "y-axis min value"]
     [slider "y-min" y-min -500 0]]
@@ -109,11 +125,11 @@
     [:label {:for "height"} "height"]
     [slider "y-max" height 400 1080]]
    [:div
-    [:label {:for "speed"} "speed"]
-    [slider "speed" speed 200 2000]]
+    [:label {:for "pause"} "pause"]
+    [slider "pause" pause 200 2000]]
    [chart width height points]])
 
 (reagent/render-component [page]
                           (. js/document (getElementById "app")))
 
-(defonce foo (evolution! 0.851 points, speed))
+(defonce start! (evolution! 0.851 points pause))
