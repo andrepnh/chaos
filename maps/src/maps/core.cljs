@@ -19,6 +19,10 @@
 
 (defonce pause (reagent/atom 1100))
 
+(defonce skip (reagent/atom 0))
+
+(defonce scale (reagent/atom 1))
+
 (def options
   {:chart       {:type "line"}
    :title       {:text ""}
@@ -52,7 +56,8 @@
       (assoc-in [:xAxis :max] @x-max)
       (assoc-in [:yAxis :min] @y-min)
       (assoc-in [:yAxis :max] @y-max)
-      (assoc-in [:series 0 :data] @points)))
+      (assoc-in [:series 0 :data]
+                (take-nth (int @scale) (drop (int @skip) @points)))))
 
 (defn chart-render [wd ht ps]
   @ps
@@ -100,8 +105,8 @@
              :on-change #(reset! upper-v (-> % .-target .-value))}]
     @upper-v]])
 
-(defn logistic-map [x]
-  (* 3.9341 x (- 1 x)))
+(defn logistic-map [n]
+  (* 3.9341 n (- 1 n)))
 
 (defn evolution! [seed ps interval]
   (letfn [(evol [x y]
@@ -127,6 +132,12 @@
    [:div
     [:label {:for "pause"} "pause"]
     [slider "pause" pause 200 2000]]
+   [:div
+    [:label {:for "skip"} "skip"]
+    [slider "skip" skip 0 1000]]
+   [:div
+    [:label {:for "scale"} "scale"]
+    [slider "scale" scale 1 10]]
    [chart width height points]])
 
 (reagent/render-component [page]
