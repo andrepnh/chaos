@@ -10,7 +10,10 @@
                  [org.clojure/clojurescript "1.9.229"]
                  [org.clojure/core.async "0.2.395"
                   :exclusions [org.clojure/tools.reader]]
-                 [reagent "0.6.0"]]
+                 [bidi "2.0.16"]
+                 [reagent "0.6.0"]
+                 [reagent-utils "0.2.1"]
+                 [venantius/accountant "0.1.9"]]
 
   :plugins [[lein-figwheel "0.5.9"]
             [lein-cljsbuild "1.1.5" :exclusions [[org.clojure/clojure]]]]
@@ -30,7 +33,8 @@
                            ;; in the default browser once Figwheel has
                            ;; started and complied your application.
                            ;; Comment this out once it no longer serves you.
-                           :open-urls ["http://localhost:3449/index.html"]}
+                           :on-jsload "maps.core/on-js-reload"
+                           :open-urls ["http://localhost:3449/"]}
 
                 :compiler {:main maps.core
                            :asset-path "js/compiled/out"
