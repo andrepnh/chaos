@@ -52,6 +52,12 @@
     {:width width :height height
      :x-min x-min :x-max x-max
      :y-min y-min :y-max y-max}
-    {:data points :scale scale :skip skip}]])
+    {:data points :scale scale :skip skip}]
+   [(reagent/create-class
+      {:reagent-render         #(vector :div)
+       :component-did-mount    #(do (compare-and-set! maps/active-maps 0 1)
+                                    (maps/evolution! points pause maps/logistic-map 0.851 maps/active-maps))
+       :component-will-unmount #(swap! maps/active-maps dec)})]])
 
-(defonce start! (maps/evolution! points pause maps/logistic-map 0.851))
+
+
