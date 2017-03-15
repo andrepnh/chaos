@@ -2,8 +2,11 @@
 
 (defonce active-maps (atom 0))
 
-(defn logistic-map [n]
-  (* 3.9341 n (- 1 n)))
+(defn logistic-map [x]
+  (* 3.9341 x (- 1 x)))
+
+(defn tent-map [x]
+  (if (< x 0.5) (* 1.1337 x) (* 1.1337 (- 1 x))))
 
 (defn evolution! [points interval f seed active-maps]
   (letfn [(evol [[x y :as point]]

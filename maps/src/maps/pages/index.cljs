@@ -5,4 +5,5 @@
 
 (defmethod fragment :index []
   [:ul
-   [:li [:a {:href (bidi/path-for routes :logistic-map)} "Logistic map"]]])
+   [:li [:a {:href (bidi/path-for routes :logistic-map)} "Logistic map"]]
+   [:li [:a {:href (bidi/path-for routes :tent-map)} "Tent map"]]])

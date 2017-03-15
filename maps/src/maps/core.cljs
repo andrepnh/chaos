@@ -6,6 +6,7 @@
             [maps.pages.template :refer [template]]
             [maps.pages.index]
             [maps.pages.logistic-map]
+            [maps.pages.tent-map]
             [maps.routes :refer [routes]]))
 
 (enable-console-print!)
