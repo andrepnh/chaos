@@ -1,1 +1,1 @@
-# chaos
+Visualizing the evolution of simple, [chaotic](https://en.wikipedia.org/wiki/Chaos_theory) equations like the [logistic map](https://en.wikipedia.org/wiki/Logistic_map) and [tent map](https://en.wikipedia.org/wiki/Tent_map).
